@@ -6,3 +6,8 @@
 	text-decoration: none;
 	font-weight: normal;
 }
+
+.done {
+	text-decoration: line-through;
+	color: gray;
+}
