@@ -1,6 +1,6 @@
 @CHARSET "UTF-8";
 
-.tasksLink, .editProject, .deleteProject, .projectDrag {
+.tasksLink, .editProject, .deleteProject, .projectDrag, .deleteTask, .taskDrag {
 	cursor: pointer;
 	color: blue;
 	text-decoration: none;
@@ -11,3 +11,8 @@
 	text-decoration: line-through;
 	color: gray;
 }
+
+.bsn {
+	border-style: none;
+}
+

@@ -17,7 +17,7 @@ class ProjectsController extends Controller {
 	/**
 	 * プロジェクト一覧
 	 */
-	public function getIndex(Request $request)
+	public function getIndex()
 	{
 		$projects = Project::orderBy('seq', 'asc')->get();
 		return view('projects.index')->with('projects', $projects);

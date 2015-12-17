@@ -3,20 +3,30 @@
 @section('content')
 <div class="container">
   <h2 class="text-primary">プロジェクト一覧</h2>
+  @if (Session::has('flash_message'))
+    <!-- フラッシュメッセージの表示 -->
+    <p id="flash_message" class="alert alert-success">{{ Session::get('flash_message') }}</p>
+  @endif
+  @if ($errors->all())
+    <!-- エラーメッセージ表示 -->
+    @foreach ($errors->all() as $error)
+      <p class="alert alert-danger">{{ $error }}</p>
+    @endforeach
+  @endif
   <input type="hidden" id="baseUrl" value="{{ url('/') }}" />
   <p><span id="addProject" class="btn btn-primary">新規追加</span></p>
   <table id="projects" class="table table-bordered">
     <thead>
-      <th>完了</th>
-      <th>プロジェクト名</th>
-      <th>操作</th>
+      <th class="text-center">完了</th>
+      <th class="text-center">プロジェクト名</th>
+      <th class="text-center">操作</th>
     </thead>
     <tbody>
       @foreach ($projects as $project)
         <tr id="project_{{ $project->id }}" data-id="{{ $project->id }}">
-          <td><input type="checkbox" class="checkProject" @if ($project->status == 'done')checked="checked"@endif /></td>
+          <td class="text-center"><input type="checkbox" class="checkProject" @if ($project->status == 'done')checked="checked"@endif /></td>
           <td><span class="{{ $project->status }}">{{ $project->name }}</span></td>
-          <td>
+          <td class="text-center">
             {!! link_to('tasks/index/' . $project->id, '[タスク]', ['class' => 'tasksLink']) !!}
             <span @if ($project->status == 'notyet')class="editProject"@endif>[編集]</span>
             <span class="deleteProject">[削除]</span>

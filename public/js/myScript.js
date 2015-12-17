@@ -6,6 +6,21 @@ $(function() {
     }
   });
 
+  // flash_messageフェードアウト
+  setTimeout(function() {
+    $('#flash_message').fadeOut("slow");
+  }, 500);
+
+  /********************************************************* datepicker */
+  // 日本語を有効化
+  $.datepicker.setDefaults($.datepicker.regional['ja']);
+  // 日付選択ボックスの生成
+  $('.start_date, .end_date').datepicker({
+    dateFormat: 'yy-mm-dd'
+  });
+
+
+  /********************************************************* プロジェクト */
   // プロジェクトstatus変更処理
   $(document).on('click', '.checkProject', function() {
     var id = $(this).parent().parent().data('id');
@@ -176,5 +191,36 @@ $(function() {
       $('#name').val('');
       $('#id').val('');
     }
+  });
+
+  /********************************************************* タスク */
+  // タスク新規追加処理
+  $('#addTask').click(function() {
+    $(this).attr('disabled', 'disabled');
+    if (confirm('タスクを追加してもよろしいですか？')) {
+      var e = $(
+        '<tr>' +
+        '<td class="text-center"><select name="statu" class="status">' +
+        '<option value="before_work">作業前</option>' +
+        '<option value="working">作業中</option>' +
+        '<option value="after_work">作業後</option>' +
+        '</select></td>' +
+        '<td class="text-center"></td>' +
+        '<td><input type="text" class="start_date" value="" /></td>' +
+        '<td><input type="text" class="end_date" value="" /></td>' +
+        '<td><input type="text" class="worker" value="" /></td>' +
+        '<td class="text-center"><select name="priority" class="priority">' +
+        '<option value="10">低</option>' +
+        '<option value="20">中</option>' +
+        '<option value="30">高</option>' +
+        '</select></td>' +
+        '<td><input type="text" class="title" value="" /></td>' +
+        '<td><textarea class="content"></textarea></td>' +
+        '<td><textarea class="remarks"></textarea></td>' +
+        '</tr>'
+      );
+      $('#tasks').append(e);
+    }
+    $(this).removeAttr('disabled');
   });
 });
