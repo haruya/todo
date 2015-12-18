@@ -26,7 +26,7 @@ class ProjectsController extends Controller {
 	/**
 	 * プロジェクトステータス変更(Ajax)
 	 */
-	public function postEditStatus(Request $request)
+	public function postStatus(Request $request)
 	{
 		$this->isAjax($request);
 		$result = DB::transaction(function() use($request) {
@@ -90,7 +90,7 @@ class ProjectsController extends Controller {
 			} else {
 				$seq = 0;
 			}
-
+			// プロジェクト新規追加
 			$project = Project::create($request->all());
 			$project->seq = $seq;
 			$project->save();
@@ -105,14 +105,14 @@ class ProjectsController extends Controller {
 	public function postUpdate(Request $request)
 	{
 		$this->isAjax($request);
-		$request = DB::transaction(function() use($request) {
+		$result = DB::transaction(function() use($request) {
 			// プロジェクト編集
 			$project = Project::findOrFail($request->id);
 			$project->name = $request->name;
 			$project->save();
 			return $project->id;
 		});
-		return \Response::json($request);
+		return \Response::json($result);
 	}
 
 	/**

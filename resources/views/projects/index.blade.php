@@ -17,9 +17,9 @@
   <p><span id="addProject" class="btn btn-primary">新規追加</span></p>
   <table id="projects" class="table table-bordered">
     <thead>
-      <th class="text-center">完了</th>
-      <th class="text-center">プロジェクト名</th>
-      <th class="text-center">操作</th>
+      <th>完了</th>
+      <th>プロジェクト名</th>
+      <th>操作</th>
     </thead>
     <tbody>
       @foreach ($projects as $project)
@@ -38,7 +38,7 @@
   </table>
 </div>
 <!-- ui-dialog -->
-<div id="addProjectDialog" title="プロジェクト新規追加">
+<div id="addProjectDialog" class="dialogEria" title="プロジェクト新規追加">
   <div class="form-group">
     <label for="name" class="control-label">プロジェクト名</label>
     <input type="text" id="name" class="form-control" value="" />
@@ -47,7 +47,7 @@
     <input type="button" id="addProjectSubmit" class="btn btn-primary" value="新規追加" />
   </div>
 </div>
-<div id="editProjectDialog" title="プロジェクト編集">
+<div id="editProjectDialog" class="dialogEria" title="プロジェクト編集">
   <div class="form-group">
     <label for="name" class="control-label">プロジェクト名</label>
     <input type="text" id="name" class="form-control" value="" />

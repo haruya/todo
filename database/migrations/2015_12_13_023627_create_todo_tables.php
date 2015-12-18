@@ -32,8 +32,6 @@ class CreateTodoTables extends Migration {
 			$table->enum('status', ['before_work', 'working', 'after_work'])->default('before_work');
 			$table->integer('priority');
 			$table->string('worker', 32)->nullable();
-			$table->date('start_date')->nullable();
-			$table->date('end_date')->nullable();
 			$table->timestamps();
 		});
 	}

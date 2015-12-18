@@ -44,6 +44,177 @@ class TasksController extends Controller {
 	}
 
 	/**
+	 * タスクステータス変更処理(Ajax)
+	 */
+	public function postStatus(Request $request)
+	{
+		$this->isAjax($request);
+		$result = DB::transaction(function() use($request) {
+			// ステータス変更
+			$task = Task::findOrFail($request->id);
+			$task->status = $request->status;
+			$task->save();
+			return $task->id;
+		});
+		return \Response::json($result);
+	}
+
+	/**
+	 * タスク作業者変更処理(Ajax)
+	 */
+	public function postWorker(Request $request)
+	{
+		$this->isAjax($request);
+		if (mb_strlen($request->worker, "UTF-8") > 64) {
+			$result = "作業者の文字数は64文字以内で入力してください。";
+			return \Response:: json($result);
+		} else {
+			$result = DB::transaction(function() use($request) {
+				// 作業者変更
+				$task = Task::findOrFail($request->id);
+				$task->worker = $request->worker;
+				$task->save();
+				return true;
+			});
+			return \Response:: json($result);
+		}
+	}
+
+	/**
+	 * タスク優先度変更処理(Ajax)
+	 */
+	public function postPriority(Request $request)
+	{
+		$this->isAjax($request);
+		$result = DB::transaction(function() use($request) {
+			// 優先度変更
+			$task = Task::findOrFail($request->id);
+			$task->priority = $request->priority;
+			$task->save();
+			return true;
+		});
+		return \Response:: json($result);
+	}
+
+	/**
+	 * タスクタイトル変更処理(Ajax)
+	 */
+	public function postTitle(Request $request)
+	{
+		$this->isAjax($request);
+		if (mb_strlen($request->title, "UTF-8") > 64) {
+			$result = "タイトルの文字数は64文字以内で入力してください。";
+			return \Response:: json($result);
+		} else {
+			$result = DB::transaction(function() use($request) {
+				// タイトル変更
+				$task = Task::findOrFail($request->id);
+				$task->title = $request->title;
+				$task->save();
+				return true;
+			});
+			return \Response:: json($result);
+		}
+	}
+
+	/**
+	 * タスク内容変更処理(Ajax)
+	 */
+	public function postContent(Request $request)
+	{
+		$this->isAjax($request);
+		$result = DB::transaction(function() use($request) {
+			// 内容変更
+			$task = Task::findOrFail($request->id);
+			$task->content = $request->content;
+			$task->save();
+			return true;
+		});
+		return \Response:: json($result);
+	}
+
+	/**
+	 * タスク備考変更処理(Ajax)
+	 */
+	public function postRemarks(Request $request)
+	{
+		$this->isAjax($request);
+		$result = DB::transaction(function() use($request) {
+			// 備考変更
+			$task = Task::findOrFail($request->id);
+			$task->remarks = $request->remarks;
+			$task->save();
+			return true;
+		});
+		return \Response:: json($result);
+	}
+
+	/**
+	 * タスク並び順変更(Ajax)
+	 */
+	public function postSort(Request $request)
+	{
+		$this->isAjax($request);
+		$result = DB::transaction(function() use($request) {
+			parse_str($request->task);
+			// 並び順変更
+			foreach ($task as $key => $val) {
+				$task = Task::findOrFail($val);
+				$task->seq = $key;
+				$task->save();
+			}
+			return true;
+		});
+		return \Response:: json($result);
+	}
+
+	/**
+	 * タスク新規追加(Ajax)
+	 */
+	public function postCreate(Request $request)
+	{
+		$this->isAjax($request);
+		$result = DB::transaction(function() use ($request) {
+			// seqの番号取得
+			$selectSql = "
+				SELECT
+					MAX(seq) + 1 as maxSeq
+				FROM
+					tasks
+				WHERE
+					project_id = ?
+			";
+			$data = DB::select($selectSql, [$request->project_id]);
+			if ($data[0]->maxSeq != null) {
+				$seq = $data[0]->maxSeq;
+			} else {
+				$seq = 0;
+			}
+			// タスク新規追加
+			$task = Task::create($request->all());
+			$task->seq = $seq;
+			$task->save();
+			return $task;
+		});
+		return \Response::json($result);
+	}
+
+	/**
+	 * タスク削除(Ajax)
+	 */
+	public function postDelete(Request $request)
+	{
+		$this->isAjax($request);
+		$result = DB::transaction(function() use($request) {
+			// タスク削除
+			$task = Task::findOrFail($request->id);
+			$task->delete();
+			return $task->id;
+		});
+		return \Response::json($result);
+	}
+
+	/**
 	 * プロジェクトの存在チェック
 	 */
 	private function checkProject($projectId)
@@ -53,6 +224,16 @@ class TasksController extends Controller {
 			return $project;
 		} else {
 			return false;
+		}
+	}
+
+	/**
+	 * Ajaxかどうかの判定
+	 */
+	private function isAjax($request)
+	{
+		if (!$request->ajax()) {
+			abort(405);
 		}
 	}
 }

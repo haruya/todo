@@ -17,14 +17,13 @@
     @endforeach
   @endif
   <input type="hidden" id="baseUrl" value="{{ url('/') }}" />
+  <input type="hidden" id="projectId" value="{{ $project->id }}" />
   <p><span id="addTask" class="btn btn-primary">新規追加</span></p>
   <table id="tasks" class="table table-bordered">
     <thead>
       <tr>
         <th class="text-center">ステータス</th>
         <th class="text-center">登録日</th>
-        <th class="text-center">開始日</th>
-        <th class="text-center">完了日</th>
         <th class="text-center">作業者</th>
         <th class="text-center">優先度</th>
         <th class="text-center">タイトル</th>
@@ -35,11 +34,9 @@
     </thead>
     <tbody>
       @foreach ($tasks as $task)
-        <tr id="task_{{ $task->id }}" data-id="{{ $task->id }}">
+        <tr id="task_{{ $task->id }}" class="{{ $task->status }}" data-id="{{ $task->id }}">
           <td class="text-center">{!! Form::select('status', $statusList, $task->status, ['class' => 'status']) !!}</td>
           <td class="text-center">{{ $task->created_at->format('Y-m-d') }}</td>
-          <td><input type="text" class="start_date" value="{{ $task->start_date }}" /></td>
-          <td><input type="text" class="end_date" value="{{ $task->end_date }}" /></td>
           <td><input type="text" class="worker" value="{{ $task->worker }}" /></td>
           <td class="text-center">{!! Form::select('priority', $priorityList, $task->priority, ['class' => 'priority']) !!}</td>
           <td><input type="text" class="title" value="{{ $task->title }}" /></td>

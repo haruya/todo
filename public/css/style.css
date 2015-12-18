@@ -16,3 +16,28 @@
 	border-style: none;
 }
 
+.dialogEria {
+	display: none;
+}
+
+table#projects thead th, table#tasks thead th {
+	background-color: #337ab7;
+	color: #ffffff;
+	vertical-align: middle;
+}
+
+table#tasks tbody td {
+	vertical-align: middle;
+}
+
+.before_work {
+	background-color: none;
+}
+
+.working {
+	background-color: yellow;
+}
+
+.after_work {
+	background-color: #999999;
+}

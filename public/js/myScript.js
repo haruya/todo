@@ -11,15 +11,6 @@ $(function() {
     $('#flash_message').fadeOut("slow");
   }, 500);
 
-  /********************************************************* datepicker */
-  // 日本語を有効化
-  $.datepicker.setDefaults($.datepicker.regional['ja']);
-  // 日付選択ボックスの生成
-  $('.start_date, .end_date').datepicker({
-    dateFormat: 'yy-mm-dd'
-  });
-
-
   /********************************************************* プロジェクト */
   // プロジェクトstatus変更処理
   $(document).on('click', '.checkProject', function() {
@@ -28,7 +19,7 @@ $(function() {
     var baseUrl = $('#baseUrl').val();
     $.ajax({
       type: "POST",
-      url: baseUrl + '/projects/edit-status',
+      url: baseUrl + '/projects/status',
       dataType: "json",
       data: {
         id: id
@@ -112,9 +103,9 @@ $(function() {
       }).done(function(data) {
         var e = $(
           '<tr id ="project_' + data + '" data-id="' + data + '">' +
-          '<td><input type="checkbox" class="checkProject" /></td>' +
+          '<td class="text-center"><input type="checkbox" class="checkProject" /></td>' +
           '<td><span class="notyet"></span></td>' +
-          '<td><a href="'+ baseUrl + '/tasks/index/' + data + '" class="tasksLink">[タスク]</a>&nbsp;<span class="editProject">[編集]</span>&nbsp;<span class="deleteProject">[削除]</span>&nbsp;<span class="projectDrag">[drag]</span></td>' +
+          '<td class="text-center"><a href="'+ baseUrl + '/tasks/index/' + data + '" class="tasksLink">[タスク]</a>&nbsp;<span class="editProject">[編集]</span>&nbsp;<span class="deleteProject">[削除]</span>&nbsp;<span class="projectDrag">[drag]</span></td>' +
           '</tr>'
         );
 		$('#projects').append(e).find('tr:last td:eq(1) span:first-child').text(name);
@@ -194,32 +185,219 @@ $(function() {
   });
 
   /********************************************************* タスク */
+  // タスクステータス変更処理
+  $(document).on('change', '.status', function() {
+    var status = $(this).val();
+    var id = $(this).parent().parent().data('id');
+    var baseUrl = $('#baseUrl').val();
+    $.ajax({
+      type: "POST",
+      url: baseUrl + '/tasks/status',
+      dataType: "json",
+      data: {
+        status: status,
+        id: id
+      }
+    }).done(function(data) {
+      $('#task_' + data).removeClass().addClass(status);
+    }).fail(function() {
+      alert('通信失敗');
+    });
+  });
+
+  // タスク作業者変更処理
+  $(document).on('change', '.worker', function() {
+    var worker = $(this).val();
+    var id = $(this).parent().parent().data('id');
+    var baseUrl = $('#baseUrl').val();
+    $.ajax({
+      type: "POST",
+      url: baseUrl + '/tasks/worker',
+      dataType: "json",
+      data: {
+        worker: worker,
+        id: id
+      }
+    }).done(function(data) {
+      if (data === true) {
+        // alert('作業者を変更しました。');
+      } else {
+        alert(data);
+      }
+    }).fail(function() {
+      alert('通信失敗');
+    });
+  });
+
+  // タスク優先度変更処理
+  $(document).on('change', '.priority', function() {
+    var priority = $(this).val();
+    var id = $(this).parent().parent().data('id');
+    var baseUrl = $('#baseUrl').val();
+    $.ajax({
+      type: "POST",
+      url: baseUrl + '/tasks/priority',
+      dataType: "json",
+      data: {
+        priority: priority,
+        id: id
+      }
+    }).done(function(data) {
+      // alert('優先度を変更しました。');
+    }).fail(function() {
+      alert('通信失敗');
+    });
+  });
+
+  // タスクタイトル変更処理
+  $(document).on('change', '.title', function() {
+    var title = $(this).val();
+    var id = $(this).parent().parent().data('id');
+    var baseUrl = $('#baseUrl').val();
+    $.ajax({
+      type: "POST",
+      url: baseUrl + '/tasks/title',
+      dataType: "json",
+      data: {
+        title: title,
+        id: id
+      }
+    }).done(function(data) {
+      if (data === true) {
+        // alert('タイトルを変更しました。');
+      } else {
+        alert(data);
+      }
+    }).fail(function() {
+      alert('通信失敗');
+    });
+  });
+
+  // タスク内容変更処理
+  $(document).on('change', '.content', function() {
+    var content = $(this).val();
+    var id = $(this).parent().parent().data('id');
+    var baseUrl = $('#baseUrl').val();
+    $.ajax({
+      type: "POST",
+      url: baseUrl + '/tasks/content',
+      dataType: "json",
+      data: {
+        content: content,
+        id: id
+      }
+    }).done(function(data) {
+      // alert('内容を変更しました。');
+    }).fail(function() {
+      alert('通信失敗');
+    });
+  });
+
+  // タスク備考変更処理
+  $(document).on('change', '.remarks', function() {
+    var remarks = $(this).val();
+    var id = $(this).parent().parent().data('id');
+    var baseUrl = $('#baseUrl').val();
+    $.ajax({
+      type: "POST",
+      url: baseUrl + '/tasks/remarks',
+      dataType: "json",
+      data: {
+        remarks: remarks,
+        id: id
+      }
+    }).done(function(data) {
+      // alert('備考を変更しました。');
+    }).fail(function() {
+      alert('通信失敗');
+    });
+  });
+
+  // タスク並び順変更処理
+  $('#tasks tbody').sortable({
+    axis: 'y',
+    opacity: 0.4,
+    handle: '.taskDrag',
+    update:function() {
+      $.ajax({
+        type: "POST",
+        url: $('#baseUrl').val() + "/tasks/sort",
+        dataType: "json",
+        data: {
+          task: $(this).sortable('serialize')
+        }
+      }).done(function(data) {
+
+      }).fail(function() {
+        alert('通信失敗');
+      });
+    }
+  });
+
+  // タスク削除処理
+  $(document).on('click', '.deleteTask', function() {
+    if (confirm('本当に削除しますか？')) {
+      var id = $(this).parent().parent().data('id');
+      var baseUrl = $('#baseUrl').val();
+      $.ajax({
+        type: "POST",
+        url: baseUrl + '/tasks/delete',
+        dataType: "json",
+        data: {
+          id: id
+        }
+      }).done(function(data) {
+        $('#task_' + data).fadeOut(800, function() {
+          alert('タスクを削除しました。');
+        });
+      }).fail(function() {
+        alert('通信失敗');
+      });
+    }
+  });
+
   // タスク新規追加処理
   $('#addTask').click(function() {
     $(this).attr('disabled', 'disabled');
     if (confirm('タスクを追加してもよろしいですか？')) {
-      var e = $(
-        '<tr>' +
-        '<td class="text-center"><select name="statu" class="status">' +
-        '<option value="before_work">作業前</option>' +
-        '<option value="working">作業中</option>' +
-        '<option value="after_work">作業後</option>' +
-        '</select></td>' +
-        '<td class="text-center"></td>' +
-        '<td><input type="text" class="start_date" value="" /></td>' +
-        '<td><input type="text" class="end_date" value="" /></td>' +
-        '<td><input type="text" class="worker" value="" /></td>' +
-        '<td class="text-center"><select name="priority" class="priority">' +
-        '<option value="10">低</option>' +
-        '<option value="20">中</option>' +
-        '<option value="30">高</option>' +
-        '</select></td>' +
-        '<td><input type="text" class="title" value="" /></td>' +
-        '<td><textarea class="content"></textarea></td>' +
-        '<td><textarea class="remarks"></textarea></td>' +
-        '</tr>'
-      );
-      $('#tasks').append(e);
+      var baseUrl = $('#baseUrl').val();
+      var projectId = $('#projectId').val();
+      $.ajax({
+        type: "POST",
+        url: baseUrl + '/tasks/create',
+        dataType: "json",
+        data: {
+          project_id: projectId
+        }
+      }).done(function(data) {
+        var created = data["created_at"].substr(0, 10);
+        var e = $(
+          '<tr id="task_' + data["id"] + '" data-id="' + data["id"] + '">' +
+          '<td class="text-center"><select name="statu" class="status">' +
+          '<option value="before_work">作業前</option>' +
+          '<option value="working">作業中</option>' +
+          '<option value="after_work">作業後</option>' +
+          '</select></td>' +
+          '<td class="text-center">' + created + '</td>' +
+          '<td><input type="text" class="worker" value="" /></td>' +
+          '<td class="text-center"><select name="priority" class="priority">' +
+          '<option value="10">低</option>' +
+          '<option value="20">中</option>' +
+          '<option value="30">高</option>' +
+          '</select></td>' +
+          '<td><input type="text" class="title" value="" /></td>' +
+          '<td><textarea class="content"></textarea></td>' +
+          '<td><textarea class="remarks"></textarea></td>' +
+          '<td class="text-center">' +
+          '<span class="deleteTask">[削除]</span>' +
+          '<span class="taskDrag">[drag]</span></td>' +
+          '</tr>'
+        );
+        $('#tasks').append(e);
+        alert('タスクを新規追加しました。');
+      }).fail(function() {
+        alert('通信失敗');
+      });
     }
     $(this).removeAttr('disabled');
   });
