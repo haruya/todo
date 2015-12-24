@@ -43,6 +43,7 @@
           <td><textarea class="content">{{ $task->content }}</textarea></td>
           <td><textarea class="remarks">{{ $task->remarks }}</textarea></td>
           <td class="text-center">
+            <span class="editTask">[保存]</span>
             <span class="deleteTask">[削除]</span>
             <span class="taskDrag">[drag]</span>
           </td>

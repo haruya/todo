@@ -43,111 +43,6 @@ class TasksController extends Controller {
 		return view('tasks.index', compact('tasks', 'project', 'statusList', 'priorityList'));
 	}
 
-	/**
-	 * タスクステータス変更処理(Ajax)
-	 */
-	public function postStatus(Request $request)
-	{
-		$this->isAjax($request);
-		$result = DB::transaction(function() use($request) {
-			// ステータス変更
-			$task = Task::findOrFail($request->id);
-			$task->status = $request->status;
-			$task->save();
-			return $task->id;
-		});
-		return \Response::json($result);
-	}
-
-	/**
-	 * タスク作業者変更処理(Ajax)
-	 */
-	public function postWorker(Request $request)
-	{
-		$this->isAjax($request);
-		if (mb_strlen($request->worker, "UTF-8") > 64) {
-			$result = "作業者の文字数は64文字以内で入力してください。";
-			return \Response:: json($result);
-		} else {
-			$result = DB::transaction(function() use($request) {
-				// 作業者変更
-				$task = Task::findOrFail($request->id);
-				$task->worker = $request->worker;
-				$task->save();
-				return true;
-			});
-			return \Response:: json($result);
-		}
-	}
-
-	/**
-	 * タスク優先度変更処理(Ajax)
-	 */
-	public function postPriority(Request $request)
-	{
-		$this->isAjax($request);
-		$result = DB::transaction(function() use($request) {
-			// 優先度変更
-			$task = Task::findOrFail($request->id);
-			$task->priority = $request->priority;
-			$task->save();
-			return true;
-		});
-		return \Response:: json($result);
-	}
-
-	/**
-	 * タスクタイトル変更処理(Ajax)
-	 */
-	public function postTitle(Request $request)
-	{
-		$this->isAjax($request);
-		if (mb_strlen($request->title, "UTF-8") > 64) {
-			$result = "タイトルの文字数は64文字以内で入力してください。";
-			return \Response:: json($result);
-		} else {
-			$result = DB::transaction(function() use($request) {
-				// タイトル変更
-				$task = Task::findOrFail($request->id);
-				$task->title = $request->title;
-				$task->save();
-				return true;
-			});
-			return \Response:: json($result);
-		}
-	}
-
-	/**
-	 * タスク内容変更処理(Ajax)
-	 */
-	public function postContent(Request $request)
-	{
-		$this->isAjax($request);
-		$result = DB::transaction(function() use($request) {
-			// 内容変更
-			$task = Task::findOrFail($request->id);
-			$task->content = $request->content;
-			$task->save();
-			return true;
-		});
-		return \Response:: json($result);
-	}
-
-	/**
-	 * タスク備考変更処理(Ajax)
-	 */
-	public function postRemarks(Request $request)
-	{
-		$this->isAjax($request);
-		$result = DB::transaction(function() use($request) {
-			// 備考変更
-			$task = Task::findOrFail($request->id);
-			$task->remarks = $request->remarks;
-			$task->save();
-			return true;
-		});
-		return \Response:: json($result);
-	}
 
 	/**
 	 * タスク並び順変更(Ajax)
@@ -198,6 +93,39 @@ class TasksController extends Controller {
 		});
 		return \Response::json($result);
 	}
+
+	/**
+	 * タスク保存(変更)処理(Ajax)
+	 */
+	public function postUpdate(Request $request)
+	{
+		$this->isAjax($request);
+
+		if (mb_strlen($request->worker, "UTF-8") > 32) {
+			$result = "作業者は32文字以内で入力してください。";
+			return \Response:: json($result);
+		}
+
+		if (mb_strlen($request->title, "UTF-8") > 64) {
+			$result = "タイトルは64文字以内で入力してください。";
+			return \Response:: json($result);
+		}
+
+		$result = DB::transaction(function() use($request) {
+			// タスク保存(変更)
+			$task = Task::findOrFail($request->id);
+			$task->title = $request->title;
+			$task->content = $request->content;
+			$task->remarks = $request->remarks;
+			$task->status = $request->status;
+			$task->priority = $request->priority;
+			$task->worker = $request->worker;
+			$task->save();
+			return true;
+		});
+		return \Response:: json($result);
+	}
+
 
 	/**
 	 * タスク削除(Ajax)

@@ -185,132 +185,47 @@ $(function() {
   });
 
   /********************************************************* タスク */
-  // タスクステータス変更処理
+  // タスクステータスの背景変更処理
   $(document).on('change', '.status', function() {
     var status = $(this).val();
     var id = $(this).parent().parent().data('id');
-    var baseUrl = $('#baseUrl').val();
-    $.ajax({
-      type: "POST",
-      url: baseUrl + '/tasks/status',
-      dataType: "json",
-      data: {
-        status: status,
-        id: id
-      }
-    }).done(function(data) {
-      $('#task_' + data).removeClass().addClass(status);
-    }).fail(function() {
-      alert('通信失敗');
-    });
+    $('#task_' + id).removeClass().addClass(status);
   });
 
-  // タスク作業者変更処理
-  $(document).on('change', '.worker', function() {
-    var worker = $(this).val();
-    var id = $(this).parent().parent().data('id');
-    var baseUrl = $('#baseUrl').val();
-    $.ajax({
-      type: "POST",
-      url: baseUrl + '/tasks/worker',
-      dataType: "json",
-      data: {
-        worker: worker,
-        id: id
-      }
-    }).done(function(data) {
-      if (data === true) {
-        // alert('作業者を変更しました。');
-      } else {
-        alert(data);
-      }
-    }).fail(function() {
-      alert('通信失敗');
-    });
-  });
-
-  // タスク優先度変更処理
-  $(document).on('change', '.priority', function() {
-    var priority = $(this).val();
-    var id = $(this).parent().parent().data('id');
-    var baseUrl = $('#baseUrl').val();
-    $.ajax({
-      type: "POST",
-      url: baseUrl + '/tasks/priority',
-      dataType: "json",
-      data: {
-        priority: priority,
-        id: id
-      }
-    }).done(function(data) {
-      // alert('優先度を変更しました。');
-    }).fail(function() {
-      alert('通信失敗');
-    });
-  });
-
-  // タスクタイトル変更処理
-  $(document).on('change', '.title', function() {
-    var title = $(this).val();
-    var id = $(this).parent().parent().data('id');
-    var baseUrl = $('#baseUrl').val();
-    $.ajax({
-      type: "POST",
-      url: baseUrl + '/tasks/title',
-      dataType: "json",
-      data: {
-        title: title,
-        id: id
-      }
-    }).done(function(data) {
-      if (data === true) {
-        // alert('タイトルを変更しました。');
-      } else {
-        alert(data);
-      }
-    }).fail(function() {
-      alert('通信失敗');
-    });
-  });
-
-  // タスク内容変更処理
-  $(document).on('change', '.content', function() {
-    var content = $(this).val();
-    var id = $(this).parent().parent().data('id');
-    var baseUrl = $('#baseUrl').val();
-    $.ajax({
-      type: "POST",
-      url: baseUrl + '/tasks/content',
-      dataType: "json",
-      data: {
-        content: content,
-        id: id
-      }
-    }).done(function(data) {
-      // alert('内容を変更しました。');
-    }).fail(function() {
-      alert('通信失敗');
-    });
-  });
-
-  // タスク備考変更処理
-  $(document).on('change', '.remarks', function() {
-    var remarks = $(this).val();
-    var id = $(this).parent().parent().data('id');
-    var baseUrl = $('#baseUrl').val();
-    $.ajax({
-      type: "POST",
-      url: baseUrl + '/tasks/remarks',
-      dataType: "json",
-      data: {
-        remarks: remarks,
-        id: id
-      }
-    }).done(function(data) {
-      // alert('備考を変更しました。');
-    }).fail(function() {
-      alert('通信失敗');
-    });
+  // タスク保存(変更)処理
+  $(document).on('click', '.editTask', function() {
+    if (confirm('保存してもよろしいですか？')) {
+      var id = $(this).parent().parent().data('id');
+      var title = $('#task_' + id + ' .title').val();
+      var content = $('#task_' + id + ' .content').val();
+      var remarks = $('#task_' + id + ' .remarks').val();
+      var status = $('#task_' + id + ' .status').val();
+      var priority = $('#task_' + id + ' .priority').val();
+      var worker = $('#task_' + id + ' .worker').val();
+      var baseUrl = $('#baseUrl').val();
+      $.ajax({
+        type: "POST",
+        url: baseUrl + '/tasks/update',
+        dataType: "json",
+        data: {
+          id: id,
+          title: title,
+          content: content,
+          remarks: remarks,
+          status: status,
+          priority: priority,
+          worker: worker,
+        }
+      }).done(function(data) {
+        if (data === true) {
+          alert('タスクを保存しました。');
+        } else {
+          alert(data);
+        }
+      }).fail(function() {
+        alert('通信失敗');
+      });
+    }
   });
 
   // タスク並び順変更処理
@@ -389,6 +304,7 @@ $(function() {
           '<td><textarea class="content"></textarea></td>' +
           '<td><textarea class="remarks"></textarea></td>' +
           '<td class="text-center">' +
+          '<span class="editTask">[保存]</span>' +
           '<span class="deleteTask">[削除]</span>' +
           '<span class="taskDrag">[drag]</span></td>' +
           '</tr>'

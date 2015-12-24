@@ -17,8 +17,12 @@
 Route::get('/', 'ProjectsController@getIndex');
 Route::controller('projects', 'ProjectsController');
 Route::controller('tasks', 'TasksController');
-
+Route::get('auth/login', 'Auth\AuthController@getLogin');
+Route::post('auth/login', 'Auth\AuthController@postLogin');
+Route::get('auth/logout', 'Auth\AuthController@getLogout');
+/*
 Route::controllers([
 	'auth' => 'Auth\AuthController',
 	'password' => 'Auth\PasswordController',
 ]);
+*/
